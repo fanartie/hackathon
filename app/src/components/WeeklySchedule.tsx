@@ -138,7 +138,7 @@ const WeeklySchedule = ({ value, onChange, disabled = false }: WeeklySchedulePro
                   style={{
                     padding: '4px 8px',
                     fontSize: '12px',
-                    backgroundColor: '#007bff',
+                    backgroundColor: '#554a94ff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '3px',

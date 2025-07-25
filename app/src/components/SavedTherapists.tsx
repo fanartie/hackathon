@@ -68,7 +68,7 @@ const SavedTherapists = () => {
             style={{
               padding: '8px 16px',
               marginRight: '10px',
-              backgroundColor: '#007bff',
+              backgroundColor: '#554a94ff',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
