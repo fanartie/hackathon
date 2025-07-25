@@ -113,7 +113,7 @@ const AvailabilityTab = ({ value, onChange, disabled = false }: AvailabilityTabP
           <div style={{ fontSize: '12px', color: '#666' }}>Available Days</div>
         </div>
         <div style={{ textAlign: 'center', flex: 1 }}>
-          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#007bff' }}>
+          <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#554a94ff' }}>
             {getTotalTimeSlots()}
           </div>
           <div style={{ fontSize: '12px', color: '#666' }}>Time Slots</div>

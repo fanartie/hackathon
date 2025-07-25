@@ -145,7 +145,7 @@ const TherapistNote = () => {
             width: '100%',
             padding: '10px',
             marginTop: '10px',
-            backgroundColor: (!activeTherapist || isCreatingNew || !noteText.trim()) ? '#ccc' : '#007bff',
+            backgroundColor: (!activeTherapist || isCreatingNew || !noteText.trim()) ? '#ccc' : '#554a94ff',
             color: 'white',
             border: 'none',
             borderRadius: '4px',
@@ -220,7 +220,7 @@ const TherapistNote = () => {
                         padding: '2px 6px',
                         fontSize: '11px',
                         backgroundColor: 'transparent',
-                        color: '#007bff',
+                        color: '#554a94ff',
                         border: 'none',
                         cursor: 'pointer',
                         textDecoration: 'underline'
