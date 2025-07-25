@@ -12,6 +12,7 @@ interface SampleSpec {
   title: string;
   company: string;
   hobbies: string[];
+  [key: string]: unknown;
 }
 
 /**
@@ -24,7 +25,7 @@ export function loadSampleSpec(): SampleSpec {
     const specContent = fs.readFileSync(specPath, 'utf8');
     return JSON.parse(specContent);
   } catch (error) {
-    console.error('Error loading sample spec:', error.message);
+    console.error('Error loading sample spec:', error instanceof Error ? error.message : 'Unknown error');
     // Fallback to hardcoded spec
     return {
       name: 'abc',

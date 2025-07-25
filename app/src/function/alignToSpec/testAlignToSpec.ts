@@ -1,4 +1,4 @@
-import { alignToSpec } from '../../../dist/alignToSpec.js';
+import { alignToSpec } from './alignToSpec.js';
 import { loadSampleSpec } from './loadSpec.js';
 
 interface TestData {
@@ -65,7 +65,7 @@ function runAlignmentTest(testName: string, spec: any, addInfo: TestData): void 
     
     if (result.newColumns && result.newColumns.length > 0) {
       console.log('\n🆕 New Columns Found:');
-      result.newColumns.forEach((col, index) => {
+      result.newColumns.forEach((col: string, index: number) => {
         console.log(`${index + 1}. ${col}`);
       });
     } else {
@@ -108,10 +108,10 @@ function runAllTests(): void {
   console.log('\n🧪 Test 4: Error Handling');
   console.log('=' .repeat(50));
   
-  const errorTest1 = alignToSpec(null, sampleAddInfo1);
+  const errorTest1 = alignToSpec(null as any, sampleAddInfo1);
   console.log('Invalid spec test:', errorTest1.success ? 'FAILED' : `PASSED - ${errorTest1.error}`);
   
-  const errorTest2 = alignToSpec(sampleSpec, null);
+  const errorTest2 = alignToSpec(sampleSpec, null as any);
   console.log('Invalid addInfo test:', errorTest2.success ? 'FAILED' : `PASSED - ${errorTest2.error}`);
   
   console.log('\n✨ All tests completed!');
