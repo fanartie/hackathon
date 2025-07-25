@@ -32,3 +32,6 @@ export interface TherapistContextType {
 }
 
 export const TherapistContext = createContext<TherapistContextType | undefined>(undefined)
+
+// Form data type (excludes id, createdAt, updatedAt)
+export type TherapistFormData = Omit<TherapistData, 'id' | 'createdAt' | 'updatedAt'>

@@ -4,13 +4,12 @@ import ProfessionalInfoTab from './ProfessionalInfoTab'
 import AvailabilityTab from './AvailabilityTab'
 import { useTherapist } from '../hooks/useTherapist'
 import { useToast } from '../context/ToastContext'
-import type { TherapistData } from '../context/types'
+import type { TherapistFormData } from '../context/types'
 import { createDefaultAvailability } from '../types/availability'
-
 
 const TherapistForm = () => {
   const [activeTab, setActiveTab] = useState('personal')
-  const [therapistData, setTherapistData] = useState<TherapistData>({
+  const [therapistData, setTherapistData] = useState<TherapistFormData>({
     firstName: '',
     lastName: '',
     email: '',

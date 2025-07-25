@@ -1,8 +1,8 @@
-import type { TherapistData } from '../context/types'
+import type { TherapistFormData } from '../context/types'
 
 interface PersonalInfoTabProps {
-  therapistData: TherapistData
-  setTherapistData: (data: TherapistData) => void
+  therapistData: TherapistFormData
+  setTherapistData: (data: TherapistFormData) => void
 }
 
 const PersonalInfoTab = ({ therapistData, setTherapistData }: PersonalInfoTabProps) => {
