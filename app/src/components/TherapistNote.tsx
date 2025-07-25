@@ -21,7 +21,7 @@ const TherapistNote = () => {
     }
   }, [activeTherapist, isCreatingNew, notes])
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
     console.log('Save note clicked - Input content:', noteText.trim())
     
     if (!noteText.trim()) {
@@ -30,9 +30,14 @@ const TherapistNote = () => {
     }
 
     if (activeTherapist && !isCreatingNew) {
-      saveNote(activeTherapist.id, noteText.trim())
-      setNoteText('')
-      showToast('Note saved successfully!', 'success')
+      try {
+        await saveNote(activeTherapist.id, noteText.trim())
+        setNoteText('')
+        showToast('Note saved successfully!', 'success')
+      } catch (error) {
+        console.error('Error saving note:', error)
+        showToast('Error saving note. Please try again.', 'error')
+      }
     } else {
       showToast('Please select or create a therapist profile first.', 'warning')
     }
