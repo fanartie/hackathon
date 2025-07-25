@@ -47,7 +47,7 @@ const interestedInfo = [
   'work preference'
 ];
 
-async function runIntegratedTest() {
+async function runIntegratedTest(): Promise<void> {
   console.log('🔄 Integrated Test: textToJson → alignToSpec Pipeline');
   console.log('=' .repeat(60));
   
@@ -146,7 +146,7 @@ async function runIntegratedTest() {
 }
 
 // Additional test with different interview data
-async function runSecondTest() {
+async function runSecondTest(): Promise<void> {
   console.log('\n\n🔄 Additional Test: Different Interview Data');
   console.log('=' .repeat(60));
 

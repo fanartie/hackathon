@@ -18,8 +18,8 @@ echo ""
 echo "🚀 Starting integrated test..."
 echo ""
 
-# Run the integrated test
-node src/tests/test1.js
+# Run the integrated test using tsx to execute TypeScript directly
+npx tsx src/tests/test1.ts
 
 echo ""
 echo "✨ Test execution completed!"

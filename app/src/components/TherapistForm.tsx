@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PersonalInfoTab from './PersonalInfoTab'
 import ProfessionalInfoTab from './ProfessionalInfoTab'
+import { useTherapist } from '../context/TherapistContext'
 
 export interface TherapistData {
   firstName: string
@@ -25,10 +26,63 @@ const TherapistForm = () => {
     primaryConcerns: '',
     specializations: ''
   })
+  
+  const { activeTherapist, isCreatingNew, saveTherapist, updateTherapist } = useTherapist()
+  
+  // Update form data when active therapist changes
+  useEffect(() => {
+    if (activeTherapist && !isCreatingNew) {
+      setTherapistData({
+        firstName: activeTherapist.firstName,
+        lastName: activeTherapist.lastName,
+        email: activeTherapist.email,
+        phone: activeTherapist.phone,
+        address: activeTherapist.address,
+        licenses: activeTherapist.licenses,
+        primaryConcerns: activeTherapist.primaryConcerns,
+        specializations: activeTherapist.specializations
+      })
+    } else if (isCreatingNew) {
+      setTherapistData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        address: '',
+        licenses: '',
+        primaryConcerns: '',
+        specializations: ''
+      })
+    }
+  }, [activeTherapist, isCreatingNew])
+  
+  const handleSave = () => {
+    if (!therapistData.firstName || !therapistData.lastName) {
+      alert('Please fill in at least the first name and last name before saving.')
+      return
+    }
+    
+    if (isCreatingNew) {
+      saveTherapist(therapistData)
+      alert('Therapist profile saved successfully!')
+    } else if (activeTherapist) {
+      updateTherapist(activeTherapist.id, therapistData)
+      alert('Therapist profile updated successfully!')
+    }
+  }
 
   return (
     <section className='therapist-form'>
-      <h2>Therapist Information Form</h2>
+      <div style={{ marginBottom: '20px' }}>
+        <h2 style={{ margin: '0 0 10px 0' }}>
+          {isCreatingNew ? 'New Therapist Profile' : `Editing: ${activeTherapist?.firstName} ${activeTherapist?.lastName}`}
+        </h2>
+        {!isCreatingNew && activeTherapist && (
+          <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+            Created: {new Date(activeTherapist.createdAt).toLocaleDateString()}
+          </p>
+        )}
+      </div>
       
       <div className="tabs" style={{ marginBottom: '20px' }}>
         <button 
@@ -71,6 +125,27 @@ const TherapistForm = () => {
           setTherapistData={setTherapistData} 
         />
       )}
+      
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <button
+          onClick={handleSave}
+          style={{
+            padding: '12px 30px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            backgroundColor: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#218838'}
+          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
+        >
+          {isCreatingNew ? 'Save New Profile' : 'Update Profile'}
+        </button>
+      </div>
     </section>
   )
 }

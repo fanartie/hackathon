@@ -6,11 +6,19 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+interface SampleSpec {
+  name: string;
+  age: number;
+  title: string;
+  company: string;
+  hobbies: string[];
+}
+
 /**
  * Loads the sample spec from spec/sampleSpec.json
- * @returns {Object} The sample specification object
+ * @returns The sample specification object
  */
-export function loadSampleSpec() {
+export function loadSampleSpec(): SampleSpec {
   try {
     const specPath = path.join(__dirname, '../../spec/sampleSpec.json');
     const specContent = fs.readFileSync(specPath, 'utf8');

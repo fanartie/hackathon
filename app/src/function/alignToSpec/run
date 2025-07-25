@@ -9,8 +9,8 @@ echo ""
 # Change to the app directory to ensure correct paths
 cd "$(dirname "$0")/../../.."
 
-# Run the test
-node src/function/alignToSpec/testAlignToSpec.js
+# Run the test using tsx to execute TypeScript directly
+npx tsx src/function/alignToSpec/testAlignToSpec.ts
 
 echo ""
 echo "✨ Test execution completed!"

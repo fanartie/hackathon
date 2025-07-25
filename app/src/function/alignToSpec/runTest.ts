@@ -1,5 +1,5 @@
-// Simple Node.js script to run alignToSpec test
-// Usage: node src/function/alignToSpec/runTest.js
+// Simple TypeScript script to run alignToSpec test
+// Usage: tsx src/function/alignToSpec/runTest.ts
 
 import { alignToSpec } from '../../../dist/alignToSpec.js';
 import { loadSampleSpec } from './loadSpec.js';
