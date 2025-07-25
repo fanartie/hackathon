@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, type ReactNode } from 'react'
 import { localStorageUtils } from '../utils/localStorage'
-import { createDefaultAvailability } from '../types/availability'
 import { TherapistContext, type TherapistContextType, type TherapistData } from './types'
 import { textToJson } from '../function/textToJson/textToJson'
 
@@ -28,7 +27,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
       // Load therapists and migrate any missing fields
       const loadedTherapists = localStorageUtils.loadTherapists().map(therapist => ({
         ...therapist,
-        availability: therapist.availability || createDefaultAvailability(),
+        availability: therapist.availability || '',
         therapistStyles: therapist.therapistStyles || [],
         updatedAt: therapist.updatedAt || therapist.createdAt
       }))
@@ -67,7 +66,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     const newTherapist: TherapistData = {
       ...therapistData,
       id: crypto.randomUUID(),
-      availability: therapistData.availability || createDefaultAvailability(),
+      availability: therapistData.availability || '',
       createdAt: now,
       updatedAt: now
     }
@@ -207,9 +206,14 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
           if (parsedData.styleAndApproach.therapistStyles) updateData.therapistStyles = parsedData.styleAndApproach.therapistStyles;
         }
         
-        // Extract availability if present
+        // Extract availability if present - convert to string format
         if (parsedData.availability) {
-          updateData.availability = parsedData.availability;
+          // If availability data is parsed, convert it to a readable string format
+          if (typeof parsedData.availability === 'object') {
+            updateData.availability = JSON.stringify(parsedData.availability, null, 2);
+          } else {
+            updateData.availability = String(parsedData.availability);
+          }
         }
         
         // Only update if we have data to update

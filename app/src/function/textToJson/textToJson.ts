@@ -59,7 +59,7 @@ The output must follow this exact structure with these main sections:
 - personalInfo: Basic personal and contact information
 - professionalInfo: Professional qualifications and specializations  
 - styleAndApproach: Therapeutic styles and approaches
-- availability: Schedule and timezone information
+- availability: Schedule and timezone information (as a readable text string)
 
 Schema Example:
 ${schemaExample}
@@ -76,7 +76,7 @@ Instructions:
 6. If specific information is not found, omit those optional fields
 7. Required fields: personalInfo.firstName and personalInfo.lastName must be present if found
 8. Return only valid JSON matching the schema structure
-9. Do not include availability section unless schedule information is explicitly mentioned
+9. For availability, return as a simple text string (not complex object) describing schedule if mentioned
 
 Example output format:
 {
@@ -92,7 +92,8 @@ Example output format:
   },
   "styleAndApproach": {
     "therapistStyles": ["logical_teaching", "solution_oriented"]
-  }
+  },
+  "availability": "Monday-Friday 9:00 AM - 5:00 PM, Toronto timezone"
 }
 `;
     } else {

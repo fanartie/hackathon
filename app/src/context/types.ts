@@ -1,5 +1,4 @@
 import { createContext } from 'react'
-import type { AvailabilityData } from '../types/availability'
 
 export interface TherapistData {
   id: string
@@ -12,7 +11,7 @@ export interface TherapistData {
   primaryConcerns: string[]
   specializations: string
   therapistStyles: string[]
-  availability: AvailabilityData
+  availability: string
   createdAt: string
   updatedAt: string
 }

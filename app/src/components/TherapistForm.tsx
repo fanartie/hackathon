@@ -6,7 +6,6 @@ import AvailabilityTab from './AvailabilityTab'
 import { useTherapist } from '../hooks/useTherapist'
 import { useToast } from '../context/ToastContext'
 import type { TherapistFormData } from '../context/types'
-import { createDefaultAvailability } from '../types/availability'
 
 const TherapistForm = () => {
   const [activeTab, setActiveTab] = useState('personal')
@@ -20,7 +19,7 @@ const TherapistForm = () => {
     primaryConcerns: [],
     specializations: '',
     therapistStyles: [],
-    availability: createDefaultAvailability()
+    availability: ''
   })
   
   const { activeTherapist, isCreatingNew, saveTherapist, updateTherapist } = useTherapist()
@@ -39,7 +38,7 @@ const TherapistForm = () => {
         primaryConcerns: activeTherapist.primaryConcerns,
         specializations: activeTherapist.specializations,
         therapistStyles: activeTherapist.therapistStyles || [],
-        availability: activeTherapist.availability || createDefaultAvailability()
+        availability: activeTherapist.availability || ''
       })
     } else if (isCreatingNew) {
       setTherapistData({
@@ -52,7 +51,7 @@ const TherapistForm = () => {
         primaryConcerns: [],
         specializations: '',
         therapistStyles: [],
-        availability: createDefaultAvailability()
+        availability: ''
       })
       // Switch to Personal Info tab when creating new profile
       setActiveTab('personal')
