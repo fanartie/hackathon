@@ -64,7 +64,7 @@ const TherapistSidebar = () => {
           style={{
             width: '100%',
             padding: '12px',
-            backgroundColor: isCreatingNew ? '#28a745' : '#007bff',
+            backgroundColor: isCreatingNew ? '#28a745' : '#554a94ff',
             color: 'white',
             border: 'none',
             borderRadius: '6px',

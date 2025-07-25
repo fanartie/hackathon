@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import { localStorageUtils } from '../utils/localStorage'
+import type { AvailabilityData } from '../types/availability'
+import { createDefaultAvailability } from '../types/availability'
 
 export interface TherapistData {
   id: string
@@ -11,6 +13,7 @@ export interface TherapistData {
   licenses: string
   primaryConcerns: string[]
   specializations: string
+  availability: AvailabilityData
   createdAt: string
 }
 
@@ -20,7 +23,7 @@ interface TherapistContextType {
   isCreatingNew: boolean
   notes: Record<string, string[]>
   saveTherapist: (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => void
-  updateTherapist: (id: string, therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => void
+  updateTherapist: (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt'>>) => void
   deleteTherapist: (id: string) => void
   clearAllTherapists: () => void
   selectTherapist: (id: string) => void
@@ -87,6 +90,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     const newTherapist: TherapistData = {
       ...therapistData,
       id: crypto.randomUUID(),
+      availability: therapistData.availability || createDefaultAvailability(),
       createdAt: new Date().toISOString()
     }
     
@@ -101,7 +105,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     localStorageUtils.saveIsCreatingNew(false)
   }
 
-  const updateTherapist = (id: string, therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => {
+  const updateTherapist = (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt'>>) => {
     const updatedTherapists = savedTherapists.map(therapist => 
       therapist.id === id 
         ? { ...therapist, ...therapistData }
@@ -130,11 +134,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     setNotes(updatedNotes)
     
     // If we're deleting the active therapist, switch to creating new
-    let newActiveTherapist = activeTherapist
-    let newIsCreatingNew = isCreatingNew
     if (activeTherapist?.id === id) {
-      newActiveTherapist = null
-      newIsCreatingNew = true
       setActiveTherapist(null)
       setIsCreatingNew(true)
     }
