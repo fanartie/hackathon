@@ -2,22 +2,11 @@ import { useState, useEffect } from 'react'
 import PersonalInfoTab from './PersonalInfoTab'
 import ProfessionalInfoTab from './ProfessionalInfoTab'
 import AvailabilityTab from './AvailabilityTab'
-import { useTherapist } from '../context/TherapistContext'
+import { useTherapist } from '../hooks/useTherapist'
 import { useToast } from '../context/ToastContext'
-import type { AvailabilityData } from '../types/availability'
+import type { TherapistData } from '../context/types'
 import { createDefaultAvailability } from '../types/availability'
 
-export interface TherapistData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  address: string
-  licenses: string
-  primaryConcerns: string[]
-  specializations: string
-  availability: AvailabilityData
-}
 
 const TherapistForm = () => {
   const [activeTab, setActiveTab] = useState('personal')
@@ -89,9 +78,12 @@ const TherapistForm = () => {
           {isCreatingNew ? 'New Therapist Profile' : `Editing: ${activeTherapist?.firstName} ${activeTherapist?.lastName}`}
         </h2>
         {!isCreatingNew && activeTherapist && (
-          <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
-            Created: {new Date(activeTherapist.createdAt).toLocaleDateString()}
-          </p>
+          <div style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+            <div>Created: {new Date(activeTherapist.createdAt).toLocaleDateString()}</div>
+            {activeTherapist.updatedAt && activeTherapist.updatedAt !== activeTherapist.createdAt && (
+              <div>Updated: {new Date(activeTherapist.updatedAt).toLocaleDateString()}</div>
+            )}
+          </div>
         )}
       </div>
       

@@ -1,4 +1,4 @@
-import type { TherapistData } from './TherapistForm'
+import type { TherapistData } from '../context/types'
 
 interface PersonalInfoTabProps {
   therapistData: TherapistData

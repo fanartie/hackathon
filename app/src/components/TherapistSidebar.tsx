@@ -1,4 +1,5 @@
-import { useTherapist, type TherapistData } from '../context/TherapistContext'
+import { useTherapist } from '../hooks/useTherapist'
+import type { TherapistData } from '../context/types'
 
 const TherapistSidebar = () => {
   const { 

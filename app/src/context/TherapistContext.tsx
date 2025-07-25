@@ -1,38 +1,7 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { localStorageUtils } from '../utils/localStorage'
-import type { AvailabilityData } from '../types/availability'
 import { createDefaultAvailability } from '../types/availability'
-
-export interface TherapistData {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  address: string
-  licenses: string
-  primaryConcerns: string[]
-  specializations: string
-  availability: AvailabilityData
-  createdAt: string
-}
-
-interface TherapistContextType {
-  savedTherapists: TherapistData[]
-  activeTherapist: TherapistData | null
-  isCreatingNew: boolean
-  notes: Record<string, string[]>
-  saveTherapist: (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => void
-  updateTherapist: (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt'>>) => void
-  deleteTherapist: (id: string) => void
-  clearAllTherapists: () => void
-  selectTherapist: (id: string) => void
-  createNewTherapist: () => void
-  saveNote: (therapistId: string, note: string) => void
-  deleteNote: (therapistId: string, noteIndex: number) => void
-}
-
-const TherapistContext = createContext<TherapistContextType | undefined>(undefined)
+import { TherapistContext, type TherapistContextType, type TherapistData } from './types'
 
 interface TherapistProviderProps {
   children: ReactNode
@@ -54,8 +23,12 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     }
 
     try {
-      // Load therapists
-      const loadedTherapists = localStorageUtils.loadTherapists()
+      // Load therapists and migrate any missing updatedAt fields
+      const loadedTherapists = localStorageUtils.loadTherapists().map(therapist => ({
+        ...therapist,
+        availability: therapist.availability || createDefaultAvailability(),
+        updatedAt: therapist.updatedAt || therapist.createdAt
+      }))
       setSavedTherapists(loadedTherapists)
 
       // Load notes
@@ -86,12 +59,14 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     }
   }, [])
 
-  const saveTherapist = (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => {
+  const saveTherapist = (therapistData: Omit<TherapistData, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString()
     const newTherapist: TherapistData = {
       ...therapistData,
       id: crypto.randomUUID(),
       availability: therapistData.availability || createDefaultAvailability(),
-      createdAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now
     }
     
     const updatedTherapists = [...savedTherapists, newTherapist]
@@ -105,18 +80,17 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     localStorageUtils.saveIsCreatingNew(false)
   }
 
-  const updateTherapist = (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt'>>) => {
+  const updateTherapist = (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt' | 'updatedAt'>>) => {
     const updatedTherapists = savedTherapists.map(therapist => 
       therapist.id === id 
-        ? { ...therapist, ...therapistData }
+        ? { ...therapist, ...therapistData, updatedAt: new Date().toISOString() }
         : therapist
     )
     setSavedTherapists(updatedTherapists)
     
     // Update active therapist if it's the one being updated
-    let updatedActiveTherapist = activeTherapist
     if (activeTherapist?.id === id) {
-      updatedActiveTherapist = { ...activeTherapist, ...therapistData }
+      const updatedActiveTherapist = { ...activeTherapist, ...therapistData, updatedAt: new Date().toISOString() }
       setActiveTherapist(updatedActiveTherapist)
     }
     
@@ -242,10 +216,3 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
   )
 }
 
-export const useTherapist = () => {
-  const context = useContext(TherapistContext)
-  if (context === undefined) {
-    throw new Error('useTherapist must be used within a TherapistProvider')
-  }
-  return context
-}
