@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import PersonalInfoTab from './PersonalInfoTab'
 import ProfessionalInfoTab from './ProfessionalInfoTab'
 import { useTherapist } from '../context/TherapistContext'
+import { useToast } from '../context/ToastContext'
 
 export interface TherapistData {
   firstName: string
@@ -10,7 +11,7 @@ export interface TherapistData {
   phone: string
   address: string
   licenses: string
-  primaryConcerns: string
+  primaryConcerns: string[]
   specializations: string
 }
 
@@ -23,11 +24,12 @@ const TherapistForm = () => {
     phone: '',
     address: '',
     licenses: '',
-    primaryConcerns: '',
+    primaryConcerns: [],
     specializations: ''
   })
   
   const { activeTherapist, isCreatingNew, saveTherapist, updateTherapist } = useTherapist()
+  const { showToast } = useToast()
   
   // Update form data when active therapist changes
   useEffect(() => {
@@ -50,24 +52,26 @@ const TherapistForm = () => {
         phone: '',
         address: '',
         licenses: '',
-        primaryConcerns: '',
+        primaryConcerns: [],
         specializations: ''
       })
+      // Switch to Personal Info tab when creating new profile
+      setActiveTab('personal')
     }
   }, [activeTherapist, isCreatingNew])
   
   const handleSave = () => {
     if (!therapistData.firstName || !therapistData.lastName) {
-      alert('Please fill in at least the first name and last name before saving.')
+      showToast('Please fill in at least the first name and last name before saving.', 'error')
       return
     }
     
     if (isCreatingNew) {
       saveTherapist(therapistData)
-      alert('Therapist profile saved successfully!')
+      showToast('Therapist profile saved successfully!', 'success')
     } else if (activeTherapist) {
       updateTherapist(activeTherapist.id, therapistData)
-      alert('Therapist profile updated successfully!')
+      showToast('Therapist profile updated successfully!', 'success')
     }
   }
 

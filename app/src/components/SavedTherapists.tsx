@@ -1,4 +1,5 @@
 import { useTherapist } from '../context/TherapistContext'
+import { enum_PresentingConcern, enum_PresentingConcernLabel } from '../spec/concerns'
 
 const SavedTherapists = () => {
   const { savedTherapists, deleteTherapist, clearAllTherapists } = useTherapist()
@@ -11,6 +12,17 @@ const SavedTherapists = () => {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const formatConcerns = (concerns: string[]) => {
+    if (!concerns || concerns.length === 0) return 'Not provided'
+    
+    return concerns.map(concern => {
+      const key = Object.keys(enum_PresentingConcern).find(
+        k => enum_PresentingConcern[k as keyof typeof enum_PresentingConcern] === concern
+      )
+      return key ? enum_PresentingConcernLabel[key as keyof typeof enum_PresentingConcernLabel] : concern
+    }).join(', ')
   }
 
   const downloadJSON = (therapist: any) => {
@@ -147,7 +159,7 @@ const SavedTherapists = () => {
                 <strong>Professional Information:</strong>
                 <ul style={{ margin: '5px 0', paddingLeft: '20px' }}>
                   <li>Licenses: {therapist.licenses || 'Not provided'}</li>
-                  <li>Primary Concerns: {therapist.primaryConcerns || 'Not provided'}</li>
+                  <li>Primary Concerns: {formatConcerns(therapist.primaryConcerns)}</li>
                   <li>Specializations: {therapist.specializations || 'Not provided'}</li>
                 </ul>
               </div>

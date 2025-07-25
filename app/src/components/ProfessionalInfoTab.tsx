@@ -1,4 +1,5 @@
 import type { TherapistData } from './TherapistForm'
+import ConcernsMultiSelector from './ConcernsMultiSelector'
 
 interface ProfessionalInfoTabProps {
   therapistData: TherapistData
@@ -19,11 +20,9 @@ const ProfessionalInfoTab = ({ therapistData, setTherapistData }: ProfessionalIn
       </div>
       <div style={{ marginBottom: '15px' }}>
         <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Primary Concerns:</label>
-        <textarea
-          value={therapistData.primaryConcerns}
-          onChange={(e) => setTherapistData({...therapistData, primaryConcerns: e.target.value})}
-          placeholder="What are the main areas you focus on in therapy?"
-          style={{ width: '100%', padding: '8px', fontSize: '16px', border: '1px solid #ccc', minHeight: '80px' }}
+        <ConcernsMultiSelector
+          selectedConcerns={therapistData.primaryConcerns}
+          onChange={(concerns) => setTherapistData({...therapistData, primaryConcerns: concerns})}
         />
       </div>
       <div style={{ marginBottom: '15px' }}>

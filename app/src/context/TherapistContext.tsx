@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { localStorageUtils } from '../utils/localStorage'
 
 export interface TherapistData {
   id: string
@@ -8,7 +9,7 @@ export interface TherapistData {
   phone: string
   address: string
   licenses: string
-  primaryConcerns: string
+  primaryConcerns: string[]
   specializations: string
   createdAt: string
 }
@@ -39,6 +40,48 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
   const [activeTherapist, setActiveTherapist] = useState<TherapistData | null>(null)
   const [isCreatingNew, setIsCreatingNew] = useState<boolean>(true)
   const [notes, setNotes] = useState<Record<string, string[]>>({})
+  const [isInitialized, setIsInitialized] = useState<boolean>(false)
+
+  // Load data from localStorage on initialization
+  useEffect(() => {
+    if (!localStorageUtils.isAvailable()) {
+      console.warn('localStorage is not available')
+      setIsInitialized(true)
+      return
+    }
+
+    try {
+      // Load therapists
+      const loadedTherapists = localStorageUtils.loadTherapists()
+      setSavedTherapists(loadedTherapists)
+
+      // Load notes
+      const loadedNotes = localStorageUtils.loadNotes()
+      setNotes(loadedNotes)
+
+      // Load creating new state
+      const loadedIsCreatingNew = localStorageUtils.loadIsCreatingNew()
+      setIsCreatingNew(loadedIsCreatingNew)
+
+      // Load active therapist
+      const activeTherapistId = localStorageUtils.loadActiveTherapistId()
+      if (activeTherapistId && !loadedIsCreatingNew) {
+        const activeTherapist = loadedTherapists.find(t => t.id === activeTherapistId)
+        if (activeTherapist) {
+          setActiveTherapist(activeTherapist)
+        } else {
+          // Clean up invalid active therapist ID
+          localStorageUtils.saveActiveTherapistId(null)
+          setIsCreatingNew(true)
+        }
+      }
+
+      setIsInitialized(true)
+    } catch (error) {
+      console.error('Failed to load data from localStorage:', error)
+      setIsInitialized(true)
+    }
+  }, [])
 
   const saveTherapist = (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => {
     const newTherapist: TherapistData = {
@@ -47,40 +90,61 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
       createdAt: new Date().toISOString()
     }
     
-    setSavedTherapists(prev => [...prev, newTherapist])
+    const updatedTherapists = [...savedTherapists, newTherapist]
+    setSavedTherapists(updatedTherapists)
     setActiveTherapist(newTherapist)
     setIsCreatingNew(false)
+    
+    // Save to localStorage
+    localStorageUtils.saveTherapists(updatedTherapists)
+    localStorageUtils.saveActiveTherapistId(newTherapist.id)
+    localStorageUtils.saveIsCreatingNew(false)
   }
 
   const updateTherapist = (id: string, therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => {
-    setSavedTherapists(prev => 
-      prev.map(therapist => 
-        therapist.id === id 
-          ? { ...therapist, ...therapistData }
-          : therapist
-      )
+    const updatedTherapists = savedTherapists.map(therapist => 
+      therapist.id === id 
+        ? { ...therapist, ...therapistData }
+        : therapist
     )
+    setSavedTherapists(updatedTherapists)
     
     // Update active therapist if it's the one being updated
+    let updatedActiveTherapist = activeTherapist
     if (activeTherapist?.id === id) {
-      setActiveTherapist(prev => prev ? { ...prev, ...therapistData } : null)
+      updatedActiveTherapist = { ...activeTherapist, ...therapistData }
+      setActiveTherapist(updatedActiveTherapist)
     }
+    
+    // Save to localStorage
+    localStorageUtils.saveTherapists(updatedTherapists)
   }
 
   const deleteTherapist = (id: string) => {
-    setSavedTherapists(prev => prev.filter(therapist => therapist.id !== id))
+    const updatedTherapists = savedTherapists.filter(therapist => therapist.id !== id)
+    setSavedTherapists(updatedTherapists)
     
     // Remove notes for this therapist
-    setNotes(prev => {
-      const newNotes = { ...prev }
-      delete newNotes[id]
-      return newNotes
-    })
+    const updatedNotes = { ...notes }
+    delete updatedNotes[id]
+    setNotes(updatedNotes)
     
     // If we're deleting the active therapist, switch to creating new
+    let newActiveTherapist = activeTherapist
+    let newIsCreatingNew = isCreatingNew
     if (activeTherapist?.id === id) {
+      newActiveTherapist = null
+      newIsCreatingNew = true
       setActiveTherapist(null)
       setIsCreatingNew(true)
+    }
+    
+    // Save to localStorage
+    localStorageUtils.saveTherapists(updatedTherapists)
+    localStorageUtils.saveNotes(updatedNotes)
+    if (activeTherapist?.id === id) {
+      localStorageUtils.saveActiveTherapistId(null)
+      localStorageUtils.saveIsCreatingNew(true)
     }
   }
 
@@ -89,6 +153,9 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     setActiveTherapist(null)
     setIsCreatingNew(true)
     setNotes({})
+    
+    // Clear localStorage
+    localStorageUtils.clearAll()
   }
 
   const selectTherapist = (id: string) => {
@@ -96,26 +163,42 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     if (therapist) {
       setActiveTherapist(therapist)
       setIsCreatingNew(false)
+      
+      // Save to localStorage
+      localStorageUtils.saveActiveTherapistId(id)
+      localStorageUtils.saveIsCreatingNew(false)
     }
   }
 
   const createNewTherapist = () => {
     setActiveTherapist(null)
     setIsCreatingNew(true)
+    
+    // Save to localStorage
+    localStorageUtils.saveActiveTherapistId(null)
+    localStorageUtils.saveIsCreatingNew(true)
   }
 
   const saveNote = (therapistId: string, note: string) => {
-    setNotes(prev => ({
-      ...prev,
-      [therapistId]: [...(prev[therapistId] || []), note]
-    }))
+    const updatedNotes = {
+      ...notes,
+      [therapistId]: [...(notes[therapistId] || []), note]
+    }
+    setNotes(updatedNotes)
+    
+    // Save to localStorage
+    localStorageUtils.saveNotes(updatedNotes)
   }
 
   const deleteNote = (therapistId: string, noteIndex: number) => {
-    setNotes(prev => ({
-      ...prev,
-      [therapistId]: (prev[therapistId] || []).filter((_, index) => index !== noteIndex)
-    }))
+    const updatedNotes = {
+      ...notes,
+      [therapistId]: (notes[therapistId] || []).filter((_, index) => index !== noteIndex)
+    }
+    setNotes(updatedNotes)
+    
+    // Save to localStorage
+    localStorageUtils.saveNotes(updatedNotes)
   }
 
   const value: TherapistContextType = {
@@ -131,6 +214,25 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     createNewTherapist,
     saveNote,
     deleteNote
+  }
+
+  // Don't render children until data is loaded from localStorage
+  if (!isInitialized) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        flexDirection: 'column',
+        gap: '10px'
+      }}>
+        <div>Loading therapist data...</div>
+        <div style={{ fontSize: '12px', color: '#666' }}>
+          Restoring from browser localStorage
+        </div>
+      </div>
+    )
   }
 
   return (

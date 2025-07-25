@@ -1,33 +1,38 @@
 import { useState, useEffect } from 'react'
 import { useTherapist } from '../context/TherapistContext'
+import { useToast } from '../context/ToastContext'
 
 const TherapistNote = () => {
   const { activeTherapist, isCreatingNew, saveNote, notes } = useTherapist()
+  const { showToast } = useToast()
   const [noteText, setNoteText] = useState('')
   const [savedNotes, setSavedNotes] = useState<string[]>([])
+  const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set())
 
   // Get notes for current therapist
   useEffect(() => {
     if (activeTherapist && !isCreatingNew) {
       const therapistNotes = notes[activeTherapist.id] || []
       setSavedNotes(therapistNotes)
+      setExpandedNotes(new Set()) // Reset expanded notes when switching therapists
     } else {
       setSavedNotes([])
+      setExpandedNotes(new Set())
     }
   }, [activeTherapist, isCreatingNew, notes])
 
   const handleSaveNote = () => {
     if (!noteText.trim()) {
-      alert('Please enter a note before saving.')
+      showToast('Please enter a note before saving.', 'error')
       return
     }
 
     if (activeTherapist && !isCreatingNew) {
       saveNote(activeTherapist.id, noteText.trim())
       setNoteText('')
-      alert('Note saved successfully!')
+      showToast('Note saved successfully!', 'success')
     } else {
-      alert('Please select or create a therapist profile first.')
+      showToast('Please select or create a therapist profile first.', 'warning')
     }
   }
 
@@ -38,6 +43,21 @@ const TherapistNote = () => {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const truncateNote = (note: string, maxLength: number = 80) => {
+    if (note.length <= maxLength) return note
+    return note.substring(0, maxLength) + '...'
+  }
+
+  const toggleNoteExpansion = (noteIndex: number) => {
+    const newExpanded = new Set(expandedNotes)
+    if (newExpanded.has(noteIndex)) {
+      newExpanded.delete(noteIndex)
+    } else {
+      newExpanded.add(noteIndex)
+    }
+    setExpandedNotes(newExpanded)
   }
 
   const exportNotes = () => {
@@ -104,7 +124,7 @@ const TherapistNote = () => {
           }
           disabled={!activeTherapist || isCreatingNew}
           style={{ 
-            width: '100%',
+            width: '90%',
             height: '120px',
             padding: '12px', 
             fontSize: '14px', 
@@ -161,32 +181,54 @@ const TherapistNote = () => {
 
         {savedNotes.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {savedNotes.map((note, index) => (
-              <div
-                key={index}
-                style={{
-                  padding: '12px',
-                  backgroundColor: 'white',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '13px',
-                  lineHeight: '1.4'
-                }}
-              >
-                <div style={{ 
-                  color: '#666', 
-                  fontSize: '11px', 
-                  marginBottom: '6px',
-                  borderBottom: '1px solid #eee',
-                  paddingBottom: '4px'
-                }}>
-                  Note #{index + 1} • {formatDate(new Date().toISOString())}
+            {savedNotes.map((note, index) => {
+              const isExpanded = expandedNotes.has(index)
+              const isTruncated = note.length > 80
+              
+              return (
+                <div
+                  key={index}
+                  style={{
+                    padding: '12px',
+                    backgroundColor: 'white',
+                    border: '1px solid #ddd',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    lineHeight: '1.4'
+                  }}
+                >
+                  <div style={{ 
+                    color: '#666', 
+                    fontSize: '11px', 
+                    marginBottom: '6px',
+                    borderBottom: '1px solid #eee',
+                    paddingBottom: '4px'
+                  }}>
+                    Note #{index + 1} • {formatDate(new Date().toISOString())}
+                  </div>
+                  <div style={{ color: '#333' }}>
+                    {isExpanded ? note : truncateNote(note)}
+                  </div>
+                  {isTruncated && (
+                    <button
+                      onClick={() => toggleNoteExpansion(index)}
+                      style={{
+                        marginTop: '6px',
+                        padding: '2px 6px',
+                        fontSize: '11px',
+                        backgroundColor: 'transparent',
+                        color: '#007bff',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textDecoration: 'underline'
+                      }}
+                    >
+                      {isExpanded ? 'Show less' : 'Show more'}
+                    </button>
+                  )}
                 </div>
-                <div style={{ color: '#333' }}>
-                  {note}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div style={{ 
