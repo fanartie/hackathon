@@ -155,7 +155,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     localStorageUtils.saveIsCreatingNew(true)
   }
 
-  const saveNote = (therapistId: string, note: string) => {
+  const saveNote = async (therapistId: string, note: string) => {
     const updatedNotes = {
       ...notes,
       [therapistId]: [...(notes[therapistId] || []), note]
@@ -164,6 +164,23 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     
     // Save to localStorage
     localStorageUtils.saveNotes(updatedNotes)
+    
+    // Run textToJson function and console.log the result
+    try {
+      const OPENAI_API_KEY = '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';
+      
+      const interestedInfo = interestedItems;
+      
+      const result = await textToJson(note, interestedInfo, {
+        apiKey: OPENAI_API_KEY,
+        model: 'gpt-3.5-turbo',
+        temperature: 0.3
+      });
+      
+      console.log('TherapistNote textToJson result:', result);
+    } catch (error) {
+      console.error('Error running textToJson on TherapistNote:', error);
+    }
   }
 
   const deleteNote = (therapistId: string, noteIndex: number) => {

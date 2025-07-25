@@ -10,7 +10,7 @@ interface ParsedResult {
   success: boolean;
   data?: Record<string, unknown>;
   error?: string;
-}
+} 
 
 export async function textToJson(
   text: string,
@@ -41,29 +41,31 @@ export async function textToJson(
 
     const openai = new OpenAI({
       apiKey: options.apiKey,
+      dangerouslyAllowBrowser: true,
     });
 
     const prompt = `
-Please parse the following interview script text and extract information based on the specified interested items. Return the result as a valid JSON object.
+Please parse the following text and extract information ONLY for the specified interested items. Do not include any other data in the output.
 
-Interview Script:
+Text to Parse:
 ${text}
 
-Interested Information to Extract:
+Interested Items to Extract (ONLY these items):
 ${interestedInfo.map((item, index) => `${index + 1}. ${item}`).join('\n')}
 
 Instructions:
-1. Extract only the information that is explicitly mentioned in the text
-2. If information is not found, use null as the value
-3. Use camelCase for JSON keys (e.g., "their age" becomes "theirAge")
-4. Return only valid JSON without any additional text or formatting
-5. Be precise and don't make assumptions about information not clearly stated
+1. Extract information ONLY for the items listed above
+2. If an interested item is not found in the text, omit that key from the output
+3. Do NOT include any other information that is not in the interested items list
+4. Use camelCase for JSON keys (e.g., "client name" becomes "clientName")
+5. Return only valid JSON without any additional text or formatting
+6. Be precise and extract only what is explicitly mentioned for the specified items
 
-Example output format:
+Example output format (only include keys that match the interested items):
 {
-  "theirAge": "25 years old",
-  "theirLocation": "New York",
-  "theirEducationBackground": "Bachelor's in Computer Science"
+  "clientName": "John Smith",
+  "age": "25 years old",
+  "primaryConcerns": ["work stress", "sleep issues"]
 }
 `;
 
