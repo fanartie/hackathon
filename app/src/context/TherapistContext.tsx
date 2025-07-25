@@ -17,12 +17,15 @@ interface TherapistContextType {
   savedTherapists: TherapistData[]
   activeTherapist: TherapistData | null
   isCreatingNew: boolean
+  notes: Record<string, string[]>
   saveTherapist: (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => void
   updateTherapist: (id: string, therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => void
   deleteTherapist: (id: string) => void
   clearAllTherapists: () => void
   selectTherapist: (id: string) => void
   createNewTherapist: () => void
+  saveNote: (therapistId: string, note: string) => void
+  deleteNote: (therapistId: string, noteIndex: number) => void
 }
 
 const TherapistContext = createContext<TherapistContextType | undefined>(undefined)
@@ -35,6 +38,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
   const [savedTherapists, setSavedTherapists] = useState<TherapistData[]>([])
   const [activeTherapist, setActiveTherapist] = useState<TherapistData | null>(null)
   const [isCreatingNew, setIsCreatingNew] = useState<boolean>(true)
+  const [notes, setNotes] = useState<Record<string, string[]>>({})
 
   const saveTherapist = (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => {
     const newTherapist: TherapistData = {
@@ -66,6 +70,13 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
   const deleteTherapist = (id: string) => {
     setSavedTherapists(prev => prev.filter(therapist => therapist.id !== id))
     
+    // Remove notes for this therapist
+    setNotes(prev => {
+      const newNotes = { ...prev }
+      delete newNotes[id]
+      return newNotes
+    })
+    
     // If we're deleting the active therapist, switch to creating new
     if (activeTherapist?.id === id) {
       setActiveTherapist(null)
@@ -77,6 +88,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     setSavedTherapists([])
     setActiveTherapist(null)
     setIsCreatingNew(true)
+    setNotes({})
   }
 
   const selectTherapist = (id: string) => {
@@ -92,16 +104,33 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     setIsCreatingNew(true)
   }
 
+  const saveNote = (therapistId: string, note: string) => {
+    setNotes(prev => ({
+      ...prev,
+      [therapistId]: [...(prev[therapistId] || []), note]
+    }))
+  }
+
+  const deleteNote = (therapistId: string, noteIndex: number) => {
+    setNotes(prev => ({
+      ...prev,
+      [therapistId]: (prev[therapistId] || []).filter((_, index) => index !== noteIndex)
+    }))
+  }
+
   const value: TherapistContextType = {
     savedTherapists,
     activeTherapist,
     isCreatingNew,
+    notes,
     saveTherapist,
     updateTherapist,
     deleteTherapist,
     clearAllTherapists,
     selectTherapist,
-    createNewTherapist
+    createNewTherapist,
+    saveNote,
+    deleteNote
   }
 
   return (

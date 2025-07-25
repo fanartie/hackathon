@@ -1,4 +1,4 @@
-import { useTherapist } from '../context/TherapistContext'
+import { useTherapist, type TherapistData } from '../context/TherapistContext'
 
 const TherapistSidebar = () => {
   const { 
@@ -20,7 +20,7 @@ const TherapistSidebar = () => {
     })
   }
 
-  const downloadJSON = (therapist: any) => {
+  const downloadJSON = (therapist: TherapistData) => {
     const dataStr = JSON.stringify(therapist, null, 2)
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
     
