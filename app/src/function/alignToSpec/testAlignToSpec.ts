@@ -1,6 +1,10 @@
 import { alignToSpec } from '../../../dist/alignToSpec.js';
 import { loadSampleSpec } from './loadSpec.js';
 
+interface TestData {
+  [key: string]: any;
+}
+
 // Sample additional info data (similar to what textToJson might return)
 const sampleAddInfo1 = {
   name: "Sarah Johnson",
@@ -43,7 +47,7 @@ const sampleAddInfo3 = {
   availability: "Available immediately"
 };
 
-function runAlignmentTest(testName, spec, addInfo) {
+function runAlignmentTest(testName: string, spec: any, addInfo: TestData): void {
   console.log(`\n🧪 ${testName}`);
   console.log('=' .repeat(50));
   
@@ -72,7 +76,7 @@ function runAlignmentTest(testName, spec, addInfo) {
   }
 }
 
-function runAllTests() {
+function runAllTests(): void {
   // Load the sample spec from JSON file
   const sampleSpec = loadSampleSpec();
   

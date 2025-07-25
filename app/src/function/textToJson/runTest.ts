@@ -1,8 +1,8 @@
-// Simple Node.js script to run the test
-// Usage: node src/function/textToJson/runTest.js
+// Simple TypeScript script to run the test
+// Usage: tsx src/function/textToJson/runTest.ts
 
 import dotenv from 'dotenv';
-import { textToJson } from '../../../dist/textToJson.js';
+import { textToJson } from './textToJson.js';
 
 // Load environment variables from .env file
 dotenv.config();
