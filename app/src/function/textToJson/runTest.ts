@@ -66,6 +66,73 @@ async function runTest() {
       console.log('❌ Schema-based error:', schemaResult.error);
     }
 
+    // Test with schema and existing data (delta update)
+    const existingData = {
+      personalInfo: {
+        firstName: "Sarah",
+        lastName: "Johnson",
+        email: "sarah.old@email.com"
+      },
+      professionalInfo: {
+        primaryConcerns: ["Anxiety"]
+      },
+      availability: "Monday 9-5pm, Friday 10-12pm"
+    };
+
+    console.log('\n⏳ Processing with Schema-based format + Existing Data (Delta Update)...\n');
+    
+    // Use text that specifically tests sophisticated availability merging
+    const availabilityUpdateText = `
+    Sarah mentioned she's also available on Wednesday from 2-6pm now. 
+    She's added Depression to her specializations and can also work with PTSD clients.
+    Her new contact email is sarah.johnson@newclinic.com.
+    She also said Friday she can do 3-5pm in addition to her morning slot.
+    `;
+    
+    const deltaResult = await textToJson(availabilityUpdateText, {
+      apiKey,
+      model: 'gpt-3.5-turbo',
+      temperature: 0.3,
+      useSchema: true
+    }, existingData);
+
+    if (deltaResult.success) {
+      console.log('✅ Delta Update result:');
+      console.log(JSON.stringify(deltaResult.data, null, 2));
+    } else {
+      console.log('❌ Delta Update error:', deltaResult.error);
+    }
+
+    // Test availability conflict resolution
+    const conflictData = {
+      personalInfo: {
+        firstName: "Dr. Mike",
+        lastName: "Wilson"
+      },
+      availability: "Friday 10-12pm, Monday 9-5pm"
+    };
+
+    console.log('\n⏳ Testing Availability Conflict Resolution...\n');
+    
+    const conflictText = `
+    Dr. Wilson mentioned that Friday he's changing to 10-3pm instead of his current morning slot.
+    He's also adding Tuesday 2-5pm to his schedule.
+    `;
+    
+    const conflictResult = await textToJson(conflictText, {
+      apiKey,
+      model: 'gpt-3.5-turbo',
+      temperature: 0.3,
+      useSchema: true
+    }, conflictData);
+
+    if (conflictResult.success) {
+      console.log('✅ Conflict Resolution result (should replace Friday 10-12pm with 10-3pm and add Tuesday):');
+      console.log(JSON.stringify(conflictResult.data, null, 2));
+    } else {
+      console.log('❌ Conflict Resolution error:', conflictResult.error);
+    }
+
     // Test without schema (interested items only)
     console.log('\n⏳ Processing with Interested Items only...\n');
     const itemsResult = await textToJson(sampleInterviewText, {

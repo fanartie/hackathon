@@ -169,12 +169,33 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     try {
       const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
       
+      // Get existing therapist data to pass as context
+      const currentTherapist = savedTherapists.find(t => t.id === therapistId);
+      const existingData = currentTherapist ? {
+        personalInfo: {
+          firstName: currentTherapist.firstName,
+          lastName: currentTherapist.lastName,
+          email: currentTherapist.email,
+          phone: currentTherapist.phone,
+          address: currentTherapist.address
+        },
+        professionalInfo: {
+          licenses: currentTherapist.licenses,
+          specializations: currentTherapist.specializations,
+          primaryConcerns: currentTherapist.primaryConcerns
+        },
+        styleAndApproach: {
+          therapistStyles: currentTherapist.therapistStyles
+        },
+        availability: currentTherapist.availability
+      } : undefined;
+
       const result = await textToJson(note, {
         apiKey: OPENAI_API_KEY,
         model: 'gpt-3.5-turbo',
         temperature: 0.3,
         useSchema: true
-      });
+      }, existingData);
       
       console.log('TherapistNote textToJson result:', result);
       
@@ -185,7 +206,7 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
         // Build update object from parsed schema data
         const updateData: any = {};
         
-        // Extract personal info
+        // Extract personal info (delta updates)
         if (parsedData.personalInfo) {
           if (parsedData.personalInfo.firstName) updateData.firstName = parsedData.personalInfo.firstName;
           if (parsedData.personalInfo.lastName) updateData.lastName = parsedData.personalInfo.lastName;
@@ -194,25 +215,57 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
           if (parsedData.personalInfo.address) updateData.address = parsedData.personalInfo.address;
         }
         
-        // Extract professional info
+        // Extract professional info (delta updates with smart merging)
         if (parsedData.professionalInfo) {
           if (parsedData.professionalInfo.licenses) updateData.licenses = parsedData.professionalInfo.licenses;
           if (parsedData.professionalInfo.specializations) updateData.specializations = parsedData.professionalInfo.specializations;
-          if (parsedData.professionalInfo.primaryConcerns) updateData.primaryConcerns = parsedData.professionalInfo.primaryConcerns;
+          
+          // Smart merge for primaryConcerns array
+          if (parsedData.professionalInfo.primaryConcerns) {
+            const existingConcerns = currentTherapist?.primaryConcerns || [];
+            const newConcerns = parsedData.professionalInfo.primaryConcerns as string[];
+            // Merge and deduplicate
+            updateData.primaryConcerns = [...new Set([...existingConcerns, ...newConcerns])];
+          }
         }
         
-        // Extract style and approach
+        // Extract style and approach (delta updates with smart merging)
         if (parsedData.styleAndApproach) {
-          if (parsedData.styleAndApproach.therapistStyles) updateData.therapistStyles = parsedData.styleAndApproach.therapistStyles;
+          // Smart merge for therapistStyles array
+          if (parsedData.styleAndApproach.therapistStyles) {
+            const existingStyles = currentTherapist?.therapistStyles || [];
+            const newStyles = parsedData.styleAndApproach.therapistStyles as string[];
+            // Merge and deduplicate
+            updateData.therapistStyles = [...new Set([...existingStyles, ...newStyles])];
+          }
         }
         
-        // Extract availability if present - convert to string format
+        // Extract availability if present - handle merging intelligently
         if (parsedData.availability) {
-          // If availability data is parsed, convert it to a readable string format
+          let newAvailability: string;
+          
+          // Convert parsed availability to string if it's an object
           if (typeof parsedData.availability === 'object') {
-            updateData.availability = JSON.stringify(parsedData.availability, null, 2);
+            newAvailability = JSON.stringify(parsedData.availability, null, 2);
           } else {
-            updateData.availability = String(parsedData.availability);
+            newAvailability = String(parsedData.availability);
+          }
+          
+          // Since the AI should already handle merging in the prompt, we use the AI result
+          // But as a fallback, if the AI didn't merge properly, we can do basic merging here
+          const existingAvailability = currentTherapist?.availability || '';
+          
+          if (existingAvailability && !newAvailability.includes(existingAvailability)) {
+            // If the new availability doesn't already include the existing availability,
+            // and both contain meaningful content, combine them
+            if (existingAvailability.trim() && newAvailability.trim()) {
+              updateData.availability = `${existingAvailability}, ${newAvailability}`;
+            } else {
+              updateData.availability = newAvailability;
+            }
+          } else {
+            // AI already handled merging or new availability already includes existing
+            updateData.availability = newAvailability;
           }
         }
         
