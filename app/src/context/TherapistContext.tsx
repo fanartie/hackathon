@@ -3,6 +3,7 @@ import { useState, useEffect, type ReactNode } from 'react'
 import { localStorageUtils } from '../utils/localStorage'
 import { createDefaultAvailability } from '../types/availability'
 import { TherapistContext, type TherapistContextType, type TherapistData } from './types'
+import { textToJson } from '../function/textToJson/textToJson'
 
 interface TherapistProviderProps {
   children: ReactNode
