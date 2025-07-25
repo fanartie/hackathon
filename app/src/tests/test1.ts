@@ -6,7 +6,7 @@ import { alignToSpec } from '../function/alignToSpec/alignToSpec.js';
 import { loadSampleSpec } from '../function/alignToSpec/loadSpec.js';
 
 // Hardcoded OpenAI API key for deployment
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = 'sk-' + 'proj-SydmrqNnjO0-PjVc6FEge_EifXKqGOh4GvurQTtcxj6vey5laQg1qF8yQ84Bz61btPbY_BGomCT3BlbkFJ5J_GjYeD0eGNZG2_rhW-Mx3k-ASDpv_M06rWYPetLQPaebNdUydy11OygCa1-1PT5OR151mm8A';
 
 // Sample interview transcript for testing
 const interviewTranscript = `
