@@ -52,7 +52,7 @@ const PersonalInfoTab = ({ therapistData, setTherapistData }: PersonalInfoTabPro
           style={{ width: '100%', padding: '8px', fontSize: '16px', border: '1px solid #ccc', minHeight: '80px' }}
         />
       </div>
-      // add checkbox for Wheelchair Accessible
+      {/* // add checkbox for Wheelchair Accessible */}
     </div>
   )
 }

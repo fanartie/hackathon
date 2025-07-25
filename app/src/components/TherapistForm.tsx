@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import PersonalInfoTab from './PersonalInfoTab'
 import ProfessionalInfoTab from './ProfessionalInfoTab'
+import AvailabilityTab from './AvailabilityTab'
 import { useTherapist } from '../context/TherapistContext'
 import { useToast } from '../context/ToastContext'
+import type { AvailabilityData } from '../types/availability'
+import { createDefaultAvailability } from '../types/availability'
 
 export interface TherapistData {
   firstName: string
@@ -13,6 +16,7 @@ export interface TherapistData {
   licenses: string
   primaryConcerns: string[]
   specializations: string
+  availability: AvailabilityData
 }
 
 const TherapistForm = () => {
@@ -25,7 +29,8 @@ const TherapistForm = () => {
     address: '',
     licenses: '',
     primaryConcerns: [],
-    specializations: ''
+    specializations: '',
+    availability: createDefaultAvailability()
   })
   
   const { activeTherapist, isCreatingNew, saveTherapist, updateTherapist } = useTherapist()
@@ -42,7 +47,8 @@ const TherapistForm = () => {
         address: activeTherapist.address,
         licenses: activeTherapist.licenses,
         primaryConcerns: activeTherapist.primaryConcerns,
-        specializations: activeTherapist.specializations
+        specializations: activeTherapist.specializations,
+        availability: activeTherapist.availability || createDefaultAvailability()
       })
     } else if (isCreatingNew) {
       setTherapistData({
@@ -53,7 +59,8 @@ const TherapistForm = () => {
         address: '',
         licenses: '',
         primaryConcerns: [],
-        specializations: ''
+        specializations: '',
+        availability: createDefaultAvailability()
       })
       // Switch to Personal Info tab when creating new profile
       setActiveTab('personal')
@@ -106,6 +113,7 @@ const TherapistForm = () => {
           onClick={() => setActiveTab('professional')}
           style={{
             padding: '10px 20px',
+            marginRight: '10px',
             backgroundColor: activeTab === 'professional' ? '#554a94ff' : '#f8f9fa',
             color: activeTab === 'professional' ? 'white' : 'black',
             border: '1px solid #ccc',
@@ -113,6 +121,18 @@ const TherapistForm = () => {
           }}
         >
           Professional Info
+        </button>
+        <button 
+          onClick={() => setActiveTab('availability')}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: activeTab === 'availability' ? '#554a94ff' : '#f8f9fa',
+            color: activeTab === 'availability' ? 'white' : 'black',
+            border: '1px solid #ccc',
+            cursor: 'pointer'
+          }}
+        >
+          Availability
         </button>
       </div>
 
@@ -127,6 +147,13 @@ const TherapistForm = () => {
         <ProfessionalInfoTab 
           therapistData={therapistData} 
           setTherapistData={setTherapistData} 
+        />
+      )}
+
+      {activeTab === 'availability' && (
+        <AvailabilityTab 
+          value={therapistData.availability}
+          onChange={(availability) => setTherapistData(prev => ({ ...prev, availability }))}
         />
       )}
       
