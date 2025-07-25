@@ -1,0 +1,370 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Therapist Form Schema",
+  "description": "Complete schema for therapist profile form data containing all tab sections",
+  "type": "object",
+  "required": ["personalInfo", "professionalInfo", "styleAndApproach", "availability"],
+  "properties": {
+    "personalInfo": {
+      "type": "object",
+      "title": "Personal Information Tab",
+      "description": "Basic personal and contact information",
+      "required": ["firstName", "lastName"],
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "title": "First Name",
+          "description": "Therapist's first name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "lastName": {
+          "type": "string",
+          "title": "Last Name", 
+          "description": "Therapist's last name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "title": "Email Address",
+          "description": "Professional email address",
+          "format": "email",
+          "maxLength": 255
+        },
+        "phone": {
+          "type": "string",
+          "title": "Phone Number",
+          "description": "Primary contact phone number",
+          "pattern": "^[\\d\\s\\-\\+\\(\\)]+$",
+          "maxLength": 20
+        },
+        "address": {
+          "type": "string",
+          "title": "Address",
+          "description": "Professional practice address",
+          "maxLength": 500
+        }
+      }
+    },
+    "professionalInfo": {
+      "type": "object",
+      "title": "Professional Information Tab",
+      "description": "Professional qualifications and specializations",
+      "properties": {
+        "licenses": {
+          "type": "string",
+          "title": "Professional Licenses",
+          "description": "Licensed credentials and certifications",
+          "maxLength": 1000
+        },
+        "specializations": {
+          "type": "string",
+          "title": "Specializations",
+          "description": "Areas of therapeutic specialization",
+          "maxLength": 1000
+        },
+        "primaryConcerns": {
+          "type": "array",
+          "title": "Primary Concerns",
+          "description": "Mental health concerns the therapist specializes in treating",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ADHD",
+              "Addictions",
+              "Anger_Management",
+              "Anxiety",
+              "Autism",
+              "Behavioral_Issues",
+              "Bipolar_Disorder",
+              "Career_Counseling",
+              "Child_or_Adolescent",
+              "Chronic_Illness",
+              "Chronic_Pain",
+              "Codependency",
+              "Coping_Skills",
+              "Cultural_Identity",
+              "Depression",
+              "Domestic_Abuse",
+              "Domestic_Violence",
+              "Dual_Diagnosis",
+              "Eating_Disorders",
+              "Emotional_Disturbance",
+              "Family_Conflict",
+              "Grief",
+              "Immigrants",
+              "Infertility",
+              "Internet_Addiction",
+              "Intimacy_Related_Issues",
+              "Learning_Disabilities",
+              "Life_Coaching",
+              "Life_Transitions",
+              "Marital_and_Premarital",
+              "Men_Issues",
+              "Mood_Disorders",
+              "Narcissistic_Personality",
+              "Obsessive_Compulsive_OCD",
+              "Oppositional_Defiance",
+              "Parenting",
+              "Peer_Relationships",
+              "Personality_Disorders",
+              "Phobias",
+              "Racial_Identity",
+              "Relationship_Issues",
+              "School_Issues",
+              "Self_Esteem",
+              "Self_Harming",
+              "Sexual_Abuse",
+              "Sexual_Addiction",
+              "Spirituality",
+              "Stress",
+              "Substance_Abuse",
+              "Suicidal_Ideation",
+              "Thinking_Disorders",
+              "Trauma_and_PTSD",
+              "Weight_Loss",
+              "Womens_Issues"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "styleAndApproach": {
+      "type": "object",
+      "title": "Style & Approach Tab",
+      "description": "Therapeutic style and approach preferences",
+      "properties": {
+        "therapistStyles": {
+          "type": "array",
+          "title": "Therapist Styles",
+          "description": "Selected therapeutic styles and approaches",
+          "items": {
+            "type": "string",
+            "enum": [
+              "logical_teaching",
+              "bubbly",
+              "casual",
+              "inquisitive_challenges",
+              "direct_accountable",
+              "exploratory",
+              "formal_professional",
+              "shares_personal",
+              "calm_presence",
+              "holistic",
+              "humor",
+              "skills_focused",
+              "structured",
+              "solution_oriented",
+              "body_based",
+              "reflective_activities",
+              "task_oriented_activities"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 17
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "title": "Availability Tab",
+      "description": "Schedule availability and timezone settings",
+      "required": ["timezone", "weeklySchedule", "exclusions"],
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "title": "Timezone",
+          "description": "Canadian timezone for scheduling",
+          "enum": [
+            "America/St_Johns",
+            "America/Halifax", 
+            "America/Toronto",
+            "America/Winnipeg",
+            "America/Edmonton",
+            "America/Vancouver",
+            "America/Whitehorse"
+          ]
+        },
+        "weeklySchedule": {
+          "type": "object",
+          "title": "Weekly Schedule",
+          "description": "Availability schedule for each day of the week",
+          "required": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+          "properties": {
+            "monday": { "$ref": "#/definitions/dayAvailability" },
+            "tuesday": { "$ref": "#/definitions/dayAvailability" },
+            "wednesday": { "$ref": "#/definitions/dayAvailability" },
+            "thursday": { "$ref": "#/definitions/dayAvailability" },
+            "friday": { "$ref": "#/definitions/dayAvailability" },
+            "saturday": { "$ref": "#/definitions/dayAvailability" },
+            "sunday": { "$ref": "#/definitions/dayAvailability" }
+          }
+        },
+        "exclusions": {
+          "type": "array",
+          "title": "Exclusion Times",
+          "description": "Specific periods when therapist is unavailable during available hours",
+          "items": {
+            "$ref": "#/definitions/exclusionTime"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "timeSlot": {
+      "type": "object",
+      "title": "Time Slot",
+      "description": "A time period with start and end times",
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "type": "string",
+          "title": "Start Time",
+          "description": "Start time in HH:MM format (24-hour)",
+          "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "end": {
+          "type": "string",
+          "title": "End Time", 
+          "description": "End time in HH:MM format (24-hour)",
+          "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        }
+      }
+    },
+    "dayAvailability": {
+      "type": "object",
+      "title": "Day Availability",
+      "description": "Availability status and time slots for a specific day",
+      "required": ["isAvailable", "timeSlots"],
+      "properties": {
+        "isAvailable": {
+          "type": "boolean",
+          "title": "Is Available",
+          "description": "Whether the therapist is available on this day"
+        },
+        "timeSlots": {
+          "type": "array",
+          "title": "Time Slots",
+          "description": "Available time periods for this day",
+          "items": {
+            "$ref": "#/definitions/timeSlot"
+          }
+        }
+      }
+    },
+    "exclusionTime": {
+      "type": "object",
+      "title": "Exclusion Time",
+      "description": "A period when therapist is unavailable during available hours",
+      "required": ["id", "name", "start", "end", "daysOfWeek"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Exclusion ID",
+          "description": "Unique identifier for the exclusion"
+        },
+        "name": {
+          "type": "string",
+          "title": "Exclusion Name",
+          "description": "Name/title for the exclusion (e.g., 'Lunch Break')",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "start": {
+          "type": "string",
+          "title": "Start Time",
+          "description": "Start time in HH:MM format (24-hour)",
+          "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "end": {
+          "type": "string",
+          "title": "End Time",
+          "description": "End time in HH:MM format (24-hour)",
+          "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "daysOfWeek": {
+          "type": "array",
+          "title": "Days of Week",
+          "description": "Days when this exclusion applies",
+          "items": {
+            "type": "string",
+            "enum": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "description": {
+          "type": "string",
+          "title": "Description",
+          "description": "Optional additional details about the exclusion",
+          "maxLength": 500
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "personalInfo": {
+        "firstName": "Dr. Sarah",
+        "lastName": "Johnson",
+        "email": "sarah.johnson@therapypractice.com",
+        "phone": "+1 (555) 123-4567",
+        "address": "123 Wellness St, Toronto, ON M5V 1A1"
+      },
+      "professionalInfo": {
+        "licenses": "Licensed Clinical Social Worker (LCSW), Registered Psychotherapist (RP)",
+        "specializations": "Cognitive Behavioral Therapy, Trauma-Informed Care, Mindfulness-Based Interventions",
+        "primaryConcerns": ["Anxiety", "Depression", "Trauma_and_PTSD", "Stress"]
+      },
+      "styleAndApproach": {
+        "therapistStyles": ["logical_teaching", "exploratory", "solution_oriented", "skills_focused"]
+      },
+      "availability": {
+        "timezone": "America/Toronto",
+        "weeklySchedule": {
+          "monday": {
+            "isAvailable": true,
+            "timeSlots": [{"start": "09:00", "end": "17:00"}]
+          },
+          "tuesday": {
+            "isAvailable": true,
+            "timeSlots": [{"start": "09:00", "end": "17:00"}]
+          },
+          "wednesday": {
+            "isAvailable": true,
+            "timeSlots": [{"start": "09:00", "end": "17:00"}]
+          },
+          "thursday": {
+            "isAvailable": true,
+            "timeSlots": [{"start": "09:00", "end": "17:00"}]
+          },
+          "friday": {
+            "isAvailable": true,
+            "timeSlots": [{"start": "09:00", "end": "17:00"}]
+          },
+          "saturday": {
+            "isAvailable": false,
+            "timeSlots": []
+          },
+          "sunday": {
+            "isAvailable": false,
+            "timeSlots": []
+          }
+        },
+        "exclusions": [
+          {
+            "id": "lunch-break",
+            "name": "Lunch Break",
+            "start": "12:00",
+            "end": "13:00",
+            "daysOfWeek": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+            "description": "Daily lunch break"
+          }
+        ]
+      }
+    }
+  ]
+}

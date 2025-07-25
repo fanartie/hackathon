@@ -106,7 +106,7 @@ const WeeklySchedule = ({ value, onChange, disabled = false }: WeeklySchedulePro
               padding: '15px',
               border: '1px solid #ddd',
               borderRadius: '6px',
-              backgroundColor: dayData.isAvailable ? '#f8fff8' : '#f8f8f8'
+              backgroundColor: dayData.isAvailable ? '#2c9afc14' : '#fafafaff'
             }}
           >
             <div style={{ 

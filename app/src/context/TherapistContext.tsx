@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { localStorageUtils } from '../utils/localStorage'
-import type { AvailabilityData } from '../types/availability'
 import { createDefaultAvailability } from '../types/availability'
 import { textToJson } from '../function/textToJson/textToJson'
 import interestedItems from '../spec/interested.json'
@@ -56,8 +55,13 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     }
 
     try {
-      // Load therapists
-      const loadedTherapists = localStorageUtils.loadTherapists()
+      // Load therapists and migrate any missing fields
+      const loadedTherapists = localStorageUtils.loadTherapists().map(therapist => ({
+        ...therapist,
+        availability: therapist.availability || createDefaultAvailability(),
+        therapistStyles: therapist.therapistStyles || [],
+        updatedAt: therapist.updatedAt || therapist.createdAt
+      }))
       setSavedTherapists(loadedTherapists)
 
       // Load notes
@@ -88,12 +92,14 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     }
   }, [])
 
-  const saveTherapist = (therapistData: Omit<TherapistData, 'id' | 'createdAt'>) => {
+  const saveTherapist = (therapistData: Omit<TherapistData, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString()
     const newTherapist: TherapistData = {
       ...therapistData,
       id: crypto.randomUUID(),
       availability: therapistData.availability || createDefaultAvailability(),
-      createdAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now
     }
     
     const updatedTherapists = [...savedTherapists, newTherapist]
@@ -107,18 +113,17 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     localStorageUtils.saveIsCreatingNew(false)
   }
 
-  const updateTherapist = (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt'>>) => {
+  const updateTherapist = (id: string, therapistData: Partial<Omit<TherapistData, 'id' | 'createdAt' | 'updatedAt'>>) => {
     const updatedTherapists = savedTherapists.map(therapist => 
       therapist.id === id 
-        ? { ...therapist, ...therapistData }
+        ? { ...therapist, ...therapistData, updatedAt: new Date().toISOString() }
         : therapist
     )
     setSavedTherapists(updatedTherapists)
     
     // Update active therapist if it's the one being updated
-    let updatedActiveTherapist = activeTherapist
     if (activeTherapist?.id === id) {
-      updatedActiveTherapist = { ...activeTherapist, ...therapistData }
+      const updatedActiveTherapist = { ...activeTherapist, ...therapistData, updatedAt: new Date().toISOString() }
       setActiveTherapist(updatedActiveTherapist)
     }
     
@@ -261,10 +266,3 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
   )
 }
 
-export const useTherapist = () => {
-  const context = useContext(TherapistContext)
-  if (context === undefined) {
-    throw new Error('useTherapist must be used within a TherapistProvider')
-  }
-  return context
-}

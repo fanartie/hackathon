@@ -1,9 +1,9 @@
-import type { TherapistData } from './TherapistForm'
+import type { TherapistFormData } from '../context/types'
 import ConcernsMultiSelector from './ConcernsMultiSelector'
 
 interface ProfessionalInfoTabProps {
-  therapistData: TherapistData
-  setTherapistData: (data: TherapistData) => void
+  therapistData: TherapistFormData
+  setTherapistData: (data: TherapistFormData) => void
 }
 
 const ProfessionalInfoTab = ({ therapistData, setTherapistData }: ProfessionalInfoTabProps) => {

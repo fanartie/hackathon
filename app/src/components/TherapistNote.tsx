@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useTherapist } from '../context/TherapistContext'
+import { useTherapist } from '../hooks/useTherapist'
 import { useToast } from '../context/ToastContext'
 
 const TherapistNote = () => {

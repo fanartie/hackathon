@@ -99,7 +99,7 @@ const ExclusionTimes = ({ value, onChange, disabled = false }: ExclusionTimesPro
             style={{
               padding: '6px 12px',
               fontSize: '13px',
-              backgroundColor: '#28a745',
+              backgroundColor: '#554a94ff',
               color: 'white',
               border: 'none',
               borderRadius: '4px',

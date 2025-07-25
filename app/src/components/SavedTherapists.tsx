@@ -1,4 +1,4 @@
-import { useTherapist } from '../context/TherapistContext'
+import { useTherapist } from '../hooks/useTherapist'
 import { enum_PresentingConcern, enum_PresentingConcernLabel } from '../spec/concerns'
 
 const SavedTherapists = () => {
