@@ -15,7 +15,7 @@ function App() {
         </div>
         <TherapistNote />
       </div>
-    </TherapistProvider>
+    </TherapistProvider> 
   )
 }
 
