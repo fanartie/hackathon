@@ -17,6 +17,8 @@ const TherapistNote = () => {
   }, [activeTherapist, isCreatingNew, notes])
 
   const handleSaveNote = () => {
+    console.log('Save note clicked - Input content:', noteText.trim())
+    
     if (!noteText.trim()) {
       alert('Please enter a note before saving.')
       return
@@ -112,7 +114,8 @@ const TherapistNote = () => {
             borderRadius: '4px',
             resize: 'vertical',
             fontFamily: 'inherit',
-            backgroundColor: (!activeTherapist || isCreatingNew) ? '#f5f5f5' : 'white'
+            backgroundColor: (!activeTherapist || isCreatingNew) ? '#f5f5f5' : 'white',
+            color: 'black'
           }}
         />
         <button

@@ -1,7 +1,7 @@
 // Simple TypeScript script to run alignToSpec test
 // Usage: tsx src/function/alignToSpec/runTest.ts
 
-import { alignToSpec } from '../../../dist/alignToSpec.js';
+import { alignToSpec } from './alignToSpec.js';
 import { loadSampleSpec } from './loadSpec.js';
 
 // Sample test data
@@ -38,7 +38,7 @@ if (result.success) {
   
   if (result.newColumns && result.newColumns.length > 0) {
     console.log('\n🆕 New Columns:');
-    result.newColumns.forEach((col, index) => {
+    result.newColumns.forEach((col: string, index: number) => {
       console.log(`${index + 1}. ${col}`);
     });
   }

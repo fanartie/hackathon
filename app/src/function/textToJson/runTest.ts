@@ -1,11 +1,10 @@
 // Simple TypeScript script to run the test
 // Usage: tsx src/function/textToJson/runTest.ts
 
-import dotenv from 'dotenv';
 import { textToJson } from './textToJson.js';
 
-// Load environment variables from .env file
-dotenv.config();
+// Hardcoded OpenAI API key for deployment
+const OPENAI_API_KEY = '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';
 
 const sampleInterviewText = `
 Interviewer: Hi, could you please introduce yourself?
@@ -41,16 +40,7 @@ const interestedInfo = [
 async function runTest() {
   console.log('🚀 Testing textToJson function...\n');
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  
-  if (!apiKey || apiKey === 'your-openai-api-key-here') {
-    console.log('❌ Please set your OpenAI API key in the .env file:');
-    console.log('1. Open the .env file in the root directory');
-    console.log('2. Replace "your-openai-api-key-here" with your actual API key');
-    console.log('3. Your API key should start with "sk-"\n');
-    console.log('Then run: node src/function/textToJson/runTest.js\n');
-    return;
-  }
+  const apiKey = OPENAI_API_KEY;
 
   try {
     console.log('📝 Sample Interview Text:');
