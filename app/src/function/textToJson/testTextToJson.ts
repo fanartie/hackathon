@@ -55,7 +55,7 @@ async function runTest() {
     });
     console.log('\n⏳ Processing with OpenAI...\n');
 
-    const result = await textToJson(sampleInterviewText, interestedInfo, {
+    const result = await textToJson(sampleInterviewText, {
       apiKey,
       model: 'gpt-3.5-turbo',
       temperature: 0.3
@@ -81,17 +81,16 @@ async function runErrorTests() {
 
   // Test 1: Empty text
   console.log('Test 1: Empty text');
-  const test1 = await textToJson('', interestedInfo, { apiKey });
+  const test1 = await textToJson('', { apiKey });
   console.log('Result:', test1.success ? 'Success' : `Error: ${test1.error}`);
 
-  // Test 2: Empty interested info
-  console.log('\nTest 2: Empty interested info');
-  const test2 = await textToJson(sampleInterviewText, [], { apiKey });
-  console.log('Result:', test2.success ? 'Success' : `Error: ${test2.error}`);
+  // Test 2: This test is no longer relevant since interestedInfo is built-in
+  console.log('\nTest 2: This test is no longer relevant since interestedInfo is built-in');
+  console.log('Result: Skipped');
 
   // Test 3: Missing API key
   console.log('\nTest 3: Missing API key');
-  const test3 = await textToJson(sampleInterviewText, interestedInfo, { apiKey: '' });
+  const test3 = await textToJson(sampleInterviewText, { apiKey: '' });
   console.log('Result:', test3.success ? 'Success' : `Error: ${test3.error}`);
 }
 

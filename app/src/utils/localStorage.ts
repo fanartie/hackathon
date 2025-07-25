@@ -1,4 +1,4 @@
-import type { TherapistData } from '../context/TherapistContext'
+import type { TherapistData } from '../context/types'
 
 const STORAGE_KEYS = {
   THERAPISTS: 'therapist-profiles',

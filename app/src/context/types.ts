@@ -28,7 +28,7 @@ export interface TherapistContextType {
   clearAllTherapists: () => void
   selectTherapist: (id: string) => void
   createNewTherapist: () => void
-  saveNote: (therapistId: string, note: string) => void
+  saveNote: (therapistId: string, note: string) => Promise<void>
   deleteNote: (therapistId: string, noteIndex: number) => void
 }
 

@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode } from 'react'
 import { localStorageUtils } from '../utils/localStorage'
 import { createDefaultAvailability } from '../types/availability'
 import { TherapistContext, type TherapistContextType, type TherapistData } from './types'
+import { textToJson } from '../function/textToJson/textToJson'
 
 interface TherapistProviderProps {
   children: ReactNode
@@ -164,19 +165,58 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     // Save to localStorage
     localStorageUtils.saveNotes(updatedNotes)
     
-    // Run textToJson function and console.log the result
+    // Run textToJson function and update therapist data
     try {
-      const OPENAI_API_KEY = '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';
+      const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
       
-      const interestedInfo = interestedItems;
-      
-      const result = await textToJson(note, interestedInfo, {
+      const result = await textToJson(note, {
         apiKey: OPENAI_API_KEY,
         model: 'gpt-3.5-turbo',
-        temperature: 0.3
+        temperature: 0.3,
+        useSchema: true
       });
       
       console.log('TherapistNote textToJson result:', result);
+      
+      // Update therapist data if parsing was successful and we have a valid therapist
+      if (result.success && result.data && therapistId) {
+        const parsedData = result.data as any;
+        
+        // Build update object from parsed schema data
+        const updateData: any = {};
+        
+        // Extract personal info
+        if (parsedData.personalInfo) {
+          if (parsedData.personalInfo.firstName) updateData.firstName = parsedData.personalInfo.firstName;
+          if (parsedData.personalInfo.lastName) updateData.lastName = parsedData.personalInfo.lastName;
+          if (parsedData.personalInfo.email) updateData.email = parsedData.personalInfo.email;
+          if (parsedData.personalInfo.phone) updateData.phone = parsedData.personalInfo.phone;
+          if (parsedData.personalInfo.address) updateData.address = parsedData.personalInfo.address;
+        }
+        
+        // Extract professional info
+        if (parsedData.professionalInfo) {
+          if (parsedData.professionalInfo.licenses) updateData.licenses = parsedData.professionalInfo.licenses;
+          if (parsedData.professionalInfo.specializations) updateData.specializations = parsedData.professionalInfo.specializations;
+          if (parsedData.professionalInfo.primaryConcerns) updateData.primaryConcerns = parsedData.professionalInfo.primaryConcerns;
+        }
+        
+        // Extract style and approach
+        if (parsedData.styleAndApproach) {
+          if (parsedData.styleAndApproach.therapistStyles) updateData.therapistStyles = parsedData.styleAndApproach.therapistStyles;
+        }
+        
+        // Extract availability if present
+        if (parsedData.availability) {
+          updateData.availability = parsedData.availability;
+        }
+        
+        // Only update if we have data to update
+        if (Object.keys(updateData).length > 0) {
+          updateTherapist(therapistId, updateData);
+          console.log('Updated therapist data with parsed information:', updateData);
+        }
+      }
     } catch (error) {
       console.error('Error running textToJson on TherapistNote:', error);
     }

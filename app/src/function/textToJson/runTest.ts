@@ -3,8 +3,8 @@
 
 import { textToJson } from './textToJson.js';
 
-// Hardcoded OpenAI API key for deployment
-const OPENAI_API_KEY = 'sk-' + 'proj-SydmrqNnjO0-PjVc6FEge_EifXKqGOh4GvurQTtcxj6vey5laQg1qF8yQ84Bz61btPbY_BGomCT3BlbkFJ5J_GjYeD0eGNZG2_rhW-Mx3k-ASDpv_M06rWYPetLQPaebNdUydy11OygCa1-1PT5OR151mm8A';
+// Load OpenAI API key from environment variables
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || 'your-openai-api-key-here';
 
 const sampleInterviewText = `
 Interviewer: Hi, could you please introduce yourself?
@@ -49,19 +49,37 @@ async function runTest() {
     interestedInfo.forEach((item, index) => {
       console.log(`${index + 1}. ${item}`);
     });
-    console.log('\n⏳ Processing with OpenAI...\n');
 
-    const result = await textToJson(sampleInterviewText, interestedInfo, {
+    // Test with schema (default)
+    console.log('\n⏳ Processing with Schema-based format...\n');
+    const schemaResult = await textToJson(sampleInterviewText, {
       apiKey,
       model: 'gpt-3.5-turbo',
-      temperature: 0.3
+      temperature: 0.3,
+      useSchema: true
     });
 
-    if (result.success) {
-      console.log('✅ Success! Parsed JSON result:');
-      console.log(JSON.stringify(result.data, null, 2));
+    if (schemaResult.success) {
+      console.log('✅ Schema-based result:');
+      console.log(JSON.stringify(schemaResult.data, null, 2));
     } else {
-      console.log('❌ Error:', result.error);
+      console.log('❌ Schema-based error:', schemaResult.error);
+    }
+
+    // Test without schema (interested items only)
+    console.log('\n⏳ Processing with Interested Items only...\n');
+    const itemsResult = await textToJson(sampleInterviewText, {
+      apiKey,
+      model: 'gpt-3.5-turbo',
+      temperature: 0.3,
+      useSchema: false
+    });
+
+    if (itemsResult.success) {
+      console.log('✅ Interested Items result:');
+      console.log(JSON.stringify(itemsResult.data, null, 2));
+    } else {
+      console.log('❌ Interested Items error:', itemsResult.error);
     }
 
   } catch (error) {
