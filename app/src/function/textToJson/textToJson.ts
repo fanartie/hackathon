@@ -10,7 +10,7 @@ interface ParsedResult {
   success: boolean;
   data?: Record<string, unknown>;
   error?: string;
-}
+} 
 
 export async function textToJson(
   text: string,
