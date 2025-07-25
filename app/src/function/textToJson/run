@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# TextToJson Test Runner
+# This script runs the textToJson function test
+
+echo "🚀 Running textToJson test..."
+echo ""
+
+# Change to the app directory to ensure correct paths
+cd "$(dirname "$0")/../../.."
+
+# Run the test
+node src/function/textToJson/runTest.js
+
+echo ""
+echo "✨ Test execution completed!"

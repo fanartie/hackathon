@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Integrated Pipeline Test Runner
+# This script runs the integrated test combining textToJson and alignToSpec
+
+echo "🧪 Running Integrated Pipeline Test (textToJson → alignToSpec)..."
+echo ""
+
+# Change to the app directory to ensure correct paths
+cd "$(dirname "$0")/../.."
+
+# Ensure TypeScript files are compiled
+echo "📦 Compiling TypeScript files..."
+npx tsc src/function/textToJson/textToJson.ts --outDir dist --module esnext --target es2020 --moduleResolution node
+npx tsc src/function/alignToSpec/alignToSpec.ts --outDir dist --module esnext --target es2020 --moduleResolution node
+
+echo ""
+echo "🚀 Starting integrated test..."
+echo ""
+
+# Run the integrated test
+node src/tests/test1.js
+
+echo ""
+echo "✨ Test execution completed!"

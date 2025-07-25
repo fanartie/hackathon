@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# AlignToSpec Test Runner
+# This script runs the alignToSpec function test
+
+echo "🎯 Running alignToSpec test..."
+echo ""
+
+# Change to the app directory to ensure correct paths
+cd "$(dirname "$0")/../../.."
+
+# Run the test
+node src/function/alignToSpec/testAlignToSpec.js
+
+echo ""
+echo "✨ Test execution completed!"
