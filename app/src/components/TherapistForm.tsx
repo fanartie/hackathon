@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import PersonalInfoTab from './PersonalInfoTab'
 import ProfessionalInfoTab from './ProfessionalInfoTab'
+import StyleApproachTab from './StyleApproachTab'
 import AvailabilityTab from './AvailabilityTab'
 import { useTherapist } from '../hooks/useTherapist'
 import { useToast } from '../context/ToastContext'
@@ -18,6 +19,7 @@ const TherapistForm = () => {
     licenses: '',
     primaryConcerns: [],
     specializations: '',
+    therapistStyles: [],
     availability: createDefaultAvailability()
   })
   
@@ -36,6 +38,7 @@ const TherapistForm = () => {
         licenses: activeTherapist.licenses,
         primaryConcerns: activeTherapist.primaryConcerns,
         specializations: activeTherapist.specializations,
+        therapistStyles: activeTherapist.therapistStyles || [],
         availability: activeTherapist.availability || createDefaultAvailability()
       })
     } else if (isCreatingNew) {
@@ -48,6 +51,7 @@ const TherapistForm = () => {
         licenses: '',
         primaryConcerns: [],
         specializations: '',
+        therapistStyles: [],
         availability: createDefaultAvailability()
       })
       // Switch to Personal Info tab when creating new profile
@@ -114,6 +118,19 @@ const TherapistForm = () => {
           Professional Info
         </button>
         <button 
+          onClick={() => setActiveTab('style')}
+          style={{
+            padding: '10px 20px',
+            marginRight: '10px',
+            backgroundColor: activeTab === 'style' ? '#554a94ff' : '#f8f9fa',
+            color: activeTab === 'style' ? 'white' : 'black',
+            border: '1px solid #ccc',
+            cursor: 'pointer'
+          }}
+        >
+          Style & Approach
+        </button>
+        <button 
           onClick={() => setActiveTab('availability')}
           style={{
             padding: '10px 20px',
@@ -136,6 +153,13 @@ const TherapistForm = () => {
 
       {activeTab === 'professional' && (
         <ProfessionalInfoTab 
+          therapistData={therapistData} 
+          setTherapistData={setTherapistData} 
+        />
+      )}
+
+      {activeTab === 'style' && (
+        <StyleApproachTab 
           therapistData={therapistData} 
           setTherapistData={setTherapistData} 
         />

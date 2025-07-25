@@ -11,6 +11,7 @@ export interface TherapistData {
   licenses: string
   primaryConcerns: string[]
   specializations: string
+  therapistStyles: string[]
   availability: AvailabilityData
   createdAt: string
   updatedAt: string

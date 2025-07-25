@@ -23,10 +23,11 @@ export const TherapistProvider = ({ children }: TherapistProviderProps) => {
     }
 
     try {
-      // Load therapists and migrate any missing updatedAt fields
+      // Load therapists and migrate any missing fields
       const loadedTherapists = localStorageUtils.loadTherapists().map(therapist => ({
         ...therapist,
         availability: therapist.availability || createDefaultAvailability(),
+        therapistStyles: therapist.therapistStyles || [],
         updatedAt: therapist.updatedAt || therapist.createdAt
       }))
       setSavedTherapists(loadedTherapists)
