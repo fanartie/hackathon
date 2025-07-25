@@ -7,4 +7,7 @@ export default defineConfig({
     port: 5000
   },
   plugins: [react()],
+  build: {
+    outDir: '../docs'
+  }
 })
